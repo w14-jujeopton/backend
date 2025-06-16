@@ -27,7 +27,7 @@ async function bootstrap() {
     })
   )
   app.enableCors({
-    origin: ['http://localhost:3000','http://localhost:5173'], // 프론트 도메인
+    origin: 'http://localhost:3000', // 프론트 도메인
     credentials: true,
   });
 
