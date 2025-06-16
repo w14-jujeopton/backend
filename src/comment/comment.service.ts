@@ -1,9 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Comment } from './entities/comment.entity';
 
 @Injectable()
 export class CommentService {
+
+
+  constructor(@InjectRepository(Comment) private repo: Repository<Comment>) {
+  }
+
   create(createCommentDto: CreateCommentDto) {
     return 'This action adds a new comment';
   }

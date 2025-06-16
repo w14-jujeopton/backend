@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Session, UnauthorizedException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -18,8 +18,10 @@ export class UserController {
   @ApiResponse({ status: 200, description: '로그인 성공', type: UserResponse })
   @ApiResponse({ status: 404, description: '존재하지 않는 유저' })
   @ApiResponse({ status: 401, description: '잘못된 패스워드' })
-  login(@Body() dto: LoginDto) {
-    return this.userService.login(dto.username, dto.password);
+  async login(@Body() dto: LoginDto, @Session() session: any) {
+    const user = await this.userService.login(dto.username, dto.password);
+    session.username = user.username
+    return user;
   }
 
   @Post('/signup')
@@ -29,8 +31,10 @@ export class UserController {
     description: '회원가입 성공',
     type: UserResponse,
   })
-  create(@Body() dto: CreateUserDto) {
-    return this.userService.create(dto.username, dto.password, dto.nickname);
+  async create(@Body() dto: CreateUserDto, @Session() session: any) {
+    const user = await this.userService.create(dto.username, dto.password, dto.nickname);
+    session.username = user.username
+    return user;
   }
 
   @Get()
@@ -58,7 +62,11 @@ export class UserController {
   update(
     @Param('username') username: string,
     @Body() updateUserDto: UpdateUserDto,
+    @Session() session: any,
   ) {
+    if (!session || session.username !== username) {
+      throw new UnauthorizedException('검증받은 유저가 아닙니다');
+    }
     return this.userService.update(username, updateUserDto);
   }
 
