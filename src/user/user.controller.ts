@@ -4,12 +4,19 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponse } from './dto/user-response.dto';
 import { Serialize } from '../interceptor/response.interceptor';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
+  @Post('/login')
+  @Serialize(UserResponse)
+  login(@Body() dto: LoginDto) {
+    return this.userService.login(dto.username, dto.password);
+  }
+
+  @Post('/signup')
   create(@Body() dto: CreateUserDto) {
     return this.userService.create(dto.username, dto.password, dto.nickname);
   }
@@ -21,12 +28,12 @@ export class UserController {
   }
 
   @Serialize(UserResponse)
-  @Get(':username')
+  @Get('/:username')
   findOne(@Param('username') username: string) {
     return this.userService.findOne(username);
   }
 
-  @Patch(':username')
+  @Patch('/:username')
   update(@Param('username') username: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(username, updateUserDto);
   }

@@ -1,14 +1,26 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { ValidationError } from 'class-validator';
 
 @Injectable()
 export class UserService {
 
   constructor(@InjectRepository(User) private repo: Repository<User> ) {
+  }
+
+  async login(username:string, password:string) {
+    const user = await this.findOne(username);
+    if(!user)
+      throw new NotFoundException(`이 ${username}은 가입되지 않았습니다`);
+
+    if (user.password !== password)
+      throw new UnauthorizedException('올바른 패스워드가 아닙니다');
+
+    return user;
   }
 
   create(username: string, password: string, nickname: string) {
