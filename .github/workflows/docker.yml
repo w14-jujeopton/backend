@@ -65,4 +65,4 @@ jobs:
             docker stop jujeopton || true
             docker rm jujeopton || true
             fuser -k 3000/tcp || true
-            docker run -d --name jujeopton -p 4000:3000 gooch1744/jujeopton:latest
+            docker run -d --name jujeopton --env-file /home/gooch123/env/.env.dev -p 4000:3000 gooch1744/jujeopton:latest
