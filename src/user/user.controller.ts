@@ -8,7 +8,7 @@ import { LoginDto } from './dto/login.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('user')
-@ApiTags('user')
+@ApiTags('회원')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
