@@ -16,7 +16,7 @@ async function bootstrap() {
 
   app.use(
     cookieSession({
-      name: 'session',
+      name: 'jj-session',
       keys: ['wearejunglerocks'],
       expires: 24 * 60 * 60 * 1000,
     }),
