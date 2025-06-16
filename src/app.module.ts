@@ -13,7 +13,6 @@ import { getOrmConfig } from './config/orm.config';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
