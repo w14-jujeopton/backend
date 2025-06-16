@@ -64,4 +64,5 @@ jobs:
             docker pull gooch1744/jujeopton:latest
             docker stop jujeopton || true
             docker rm jujeopton || true
+            fuser -k 3000/tcp || true
             docker run -d --name jujeopton -p 3000:3000 gooch1744/jujeopton:latest
