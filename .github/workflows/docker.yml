@@ -1,3 +1,10 @@
+name: Docker CI/CDAdd commentMore actions
+
+on:
+  push:
+    branches:
+      - main  # main 브랜치에 push 시 실행
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -6,21 +13,21 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v3
 
-      - name: Cache node_modules
+      - name: Cache npm cache
         uses: actions/cache@v3
         with:
-          path: |
-            ~/.npm        # npm 캐시 경로
-            node_modules  # (선택) 빌드 아티팩트
+          path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          restore-keys: ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm ci
 
       - name: Build project
         run: npm run build
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Docker login
         uses: docker/login-action@v3
@@ -33,4 +40,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: gooch1744/nest-app:latest
+          platforms: linux/amd64,linux/arm64
+          tags: gooch1744/jujeopton:latest
