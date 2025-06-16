@@ -42,3 +42,15 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: gooch1744/jujeopton:latest
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker pull gooch1744/jujeopton:latest
+            docker stop jujeopton || true
+            docker rm jujeopton || true
+            docker run -d --name jujeopton -p 3000:3000 gooch1744/jujeopton:latest
