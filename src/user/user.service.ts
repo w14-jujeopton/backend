@@ -1,23 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+
+  constructor(@InjectRepository(User) private repo: Repository<User> ) {
+  }
+
+  create(username: string, password: string, nickname: string) {
+
+    const user = this.repo.create({ username, password, nickname });
+
+    return this.repo.save(user);
   }
 
   findAll() {
-    return `This action returns all user`;
+    return this.repo.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(username: string) {
+    const findUser = await this.repo.findOneBy({username});
+    if (!findUser)
+      throw new NotFoundException(`해당 유저를 찾을 수 없음!! id : ${username}`);
+
+    return findUser;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(username: string, attrs : Partial<User>) {
+    const user = await this.findOne(username)
+
+    if (!user)
+        throw new NotFoundException(`해당 유저를 찾을 수 없음!! id : ${username}`);
+
+    Object.assign(user, attrs);
+
+    return this.repo.save(user);
   }
 
   remove(id: number) {
