@@ -50,7 +50,7 @@ export class CommentController {
     description: '특정 포스트의 모든 댓글을 조회합니다',
   })
   @ApiParam({ name: 'post_id', description: '포스트 ID' })
-  @ApiResponse({ status: 200, description: '조회 성공' })
+  @ApiResponse({ status: 200, description: '조회 성공' , type: CommentResponse})
   @ApiResponse({ status: 404, description: '포스트를 찾을 수 없음' })
   findAllByPost(@Param('post_id') id: string) {
     return this.commentService.findAllByPost(+id);
@@ -61,7 +61,7 @@ export class CommentController {
     summary: '내 댓글 조회',
     description: '자신이 작성한 모든 댓글을 조회합니다',
   })
-  @ApiResponse({ status: 200, description: '조회 성공' })
+  @ApiResponse({ status: 200, description: '조회 성공', type: CommentResponse })
   @ApiResponse({ status: 404, description: '사용자를 찾을 수 없음' })
   findAllByAuthor(@Session() session: any) {
     const authorName = session.username;

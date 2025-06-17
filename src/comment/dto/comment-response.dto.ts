@@ -9,7 +9,6 @@ export class CommentResponse {
   @Expose()
   content: string;
 
-
   constructor(id: number, author: User, content: string) {
     this.id = id;
     this.author_name = author.username;
