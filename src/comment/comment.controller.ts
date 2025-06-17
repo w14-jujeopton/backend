@@ -3,18 +3,20 @@ import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Serialize } from '../interceptor/response.interceptor';
+import { CommentResponse } from './dto/comment-response.dto';
 
 @Controller('comment')
 @ApiTags('댓글')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
-  @Post('/:id')
+  @Post('/:post_id')
   @ApiOperation({
     summary: '댓글 작성',
     description: '포스트에 댓글을 작성합니다',
   })
-  @ApiParam({ name: 'id', description: '포스트 ID' })
+  @ApiParam({ name: 'post_id', description: '포스트 ID' })
   @ApiBody({ type: CreateCommentDto })
   @ApiResponse({ status: 201, description: '댓글 작성 성공' })
   @ApiResponse({
@@ -22,7 +24,7 @@ export class CommentController {
     description: '포스트 또는 작성자를 찾을 수 없음',
   })
   create(
-    @Param('id') id: number,
+    @Param('post_id') id: number,
     @Session() session: any,
     @Body() dto: CreateCommentDto,
   ) {
@@ -31,6 +33,7 @@ export class CommentController {
   }
 
   @Get()
+  @Serialize(CommentResponse)
   @ApiOperation({
     summary: '전체 댓글 조회',
     description: '모든 댓글을 조회합니다',
@@ -40,15 +43,16 @@ export class CommentController {
     return this.commentService.findAll();
   }
 
-  @Get('/:id')
+  @Get('/:post_id')
+  @Serialize(CommentResponse)
   @ApiOperation({
     summary: '포스트별 댓글 조회',
     description: '특정 포스트의 모든 댓글을 조회합니다',
   })
-  @ApiParam({ name: 'id', description: '포스트 ID' })
+  @ApiParam({ name: 'post_id', description: '포스트 ID' })
   @ApiResponse({ status: 200, description: '조회 성공' })
   @ApiResponse({ status: 404, description: '포스트를 찾을 수 없음' })
-  findAllByPost(@Param('id') id: string) {
+  findAllByPost(@Param('post_id') id: string) {
     return this.commentService.findAllByPost(+id);
   }
 
@@ -64,22 +68,22 @@ export class CommentController {
     return this.commentService.findAllByAuthor(authorName);
   }
 
-  @Patch('/:id')
+  @Patch('/:comment_id')
   @ApiOperation({ summary: '댓글 수정', description: '댓글을 수정합니다' })
-  @ApiParam({ name: 'id', description: '댓글 ID' })
+  @ApiParam({ name: 'comment_id', description: '댓글 ID' })
   @ApiBody({ type: UpdateCommentDto })
   @ApiResponse({ status: 200, description: '수정 성공' })
   @ApiResponse({ status: 404, description: '댓글을 찾을 수 없음' })
-  update(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto) {
+  update(@Param('comment_id') id: string, @Body() updateCommentDto: UpdateCommentDto) {
     return this.commentService.update(+id, updateCommentDto);
   }
 
-  @Delete('/:id')
+  @Delete('/:comment_id')
   @ApiOperation({ summary: '댓글 삭제', description: '댓글을 삭제합니다' })
-  @ApiParam({ name: 'id', description: '댓글 ID' })
+  @ApiParam({ name: 'comment_id', description: '댓글 ID' })
   @ApiResponse({ status: 200, description: '삭제 성공' })
   @ApiResponse({ status: 404, description: '댓글을 찾을 수 없음' })
-  remove(@Param('id') id: string) {
+  remove(@Param('comment_id') id: string) {
     return this.commentService.remove(+id);
   }
 }
