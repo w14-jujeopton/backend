@@ -9,6 +9,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getOrmConfig } from './config/orm.config';
 import { ApiAdvice } from './api/api.advice';
 import { ApiModule } from './api/api.module';
+import { AuthController } from './auth/auth.controller';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -24,8 +26,9 @@ import { ApiModule } from './api/api.module';
     PostModule,
     CommentModule,
     ApiModule,
+    AuthModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, AuthController],
   providers: [AppService],
 })
 export class AppModule {}
