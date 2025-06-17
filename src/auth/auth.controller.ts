@@ -1,9 +1,15 @@
 // auth.controller.ts
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Session, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthService } from './auth.service';
+import { UserResponse } from 'src/user/dto/user-response.dto';
+import { Serialize } from '../interceptor/response.interceptor';
 
 @Controller('auth')
 export class AuthController {
+
+  constructor(private readonly authService: AuthService) {
+  }
 
   @Get('google')
   @UseGuards(AuthGuard('google'))
@@ -12,9 +18,21 @@ export class AuthController {
   }
 
   @Get('google/callback')
+  @Serialize(UserResponse)
   @UseGuards(AuthGuard('google'))
-  async googleCallback(@Req() req) {
-    // 구글이 넘겨준 유저 정보는 req.user에 있음
+  async googleCallback(@Req() req, @Session() session: any) {
+    console.log(`req.user = ${req.user}`)
+    let user = await this.authService.isAlreadySignedIn(req.user.email)
+    if (user)
+    {
+      session.username = user.username;
+    }
+    else
+    {
+      user = await this.authService.socialSignUp(req.user.email, req.user.name);
+      session.username = user.username;
+    }
+
     return req.user;
   }
 }
