@@ -61,7 +61,7 @@ export class CommentService {
 
   findOne(id: number) {
     if(!id)
-      throw new NotFoundException("id가 null일수 없습니다")
+      throw new NotFoundException("id가 null일 수 없습니다")
     return this.repo.findOneBy({id});
   }
 
