@@ -7,6 +7,8 @@ import { CommentModule } from './comment/comment.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getOrmConfig } from './config/orm.config';
+import { ApiAdvice } from './api/api.advice';
+import { ApiModule } from './api/api.module';
 
 @Module({
   imports: [
@@ -21,6 +23,7 @@ import { getOrmConfig } from './config/orm.config';
     UserModule,
     PostModule,
     CommentModule,
+    ApiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
