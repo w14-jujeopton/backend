@@ -1,36 +1,33 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body } from '@nestjs/common';
 import { PostService } from './post.service';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { Post as PostEntity } from './entities/post.entity';
+import { User } from 'src/user/entities/user.entity';
+import { Session } from '@nestjs/common';
 
 @Controller('post')
-@ApiTags('포스트')
 export class PostController {
-  constructor(private readonly postService: PostService) {}
-
-  @Post()
-  create(@Body() createPostDto: CreatePostDto) {
-    return this.postService.create(createPostDto);
-  }
+  constructor(private readonly postService: PostService) { }
 
   @Get()
-  findAll() {
-    return this.postService.findAll();
+  getMyPosts(@Session() session ) {
+    const username = session.username;
+    return this.postService.getUserPosts(username);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postService.findOne(+id);
-  }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postService.update(+id, updatePostDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postService.remove(+id);
+  @Post()
+  createPost(@Body() createPostDto: {
+    id: number;
+    author: User;
+    owner: User;
+    content: string;
+    createAt: Date;
+  }): Promise<PostEntity> {
+    return this.postService.createPost(createPostDto);
   }
 }
+
+/* Argument of type '{ content: string; userId: number; author: string; }'
+ is not assignable to parameter of type 
+ '{ id: number; author: User; owner: User; content: string; createAt: Date; }'.
+ */
