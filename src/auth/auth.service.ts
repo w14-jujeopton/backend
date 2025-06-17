@@ -12,9 +12,7 @@ export class AuthService {
    * @param username
    */
   async isAlreadySignedUp(username: string) {
-    console.log(`username = ${username}`)
     const user = await this.userRepo.findOneBy({ username });
-    console.log(`user.username = ${user?.username}`)
     return user;
   }
 

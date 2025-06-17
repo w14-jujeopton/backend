@@ -17,10 +17,6 @@ export class PostService {
   ) {}
 
   async getUserPosts(username: string): Promise<Post[]> {
-    console.log(
-      '[post.service.ts-getUserPosts] routine start. username: ',
-      username,
-    );
 
     if (!username) throw new NotFoundException('로그인해야 사용 가능합니다');
 
@@ -29,7 +25,6 @@ export class PostService {
       relations: ['owner', 'author'],
     });
 
-    console.log(`records : ${records}`);
     return records;
   }
 

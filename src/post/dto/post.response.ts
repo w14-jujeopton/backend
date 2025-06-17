@@ -1,4 +1,4 @@
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 
 export class PostResponse {
   @Expose()
@@ -6,7 +6,9 @@ export class PostResponse {
   @Expose()
   content: string;
   @Expose()
+  @Transform(({obj}) => obj.author.username)
   authorName: string;
   @Expose()
+  @Transform(({obj}) => obj.owner.username)
   ownerName: string;
 }

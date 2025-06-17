@@ -8,10 +8,10 @@ export class Comment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(()=> Post)
+  @ManyToOne(()=> Post, {eager: true} )
   post: Post;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, {eager: true} )
   author: User;
 
   @Column()

@@ -34,7 +34,6 @@ export class AuthController {
     @Session() session: any,
     @Res() res: any,
   ) {
-    console.log(`req.user = ${req.user}`);
     let user = await this.authService.isAlreadySignedUp(req.user.email);
     if (user) {
       session.username = user.username;

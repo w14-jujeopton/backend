@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Session } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Session, UnauthorizedException } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -8,6 +8,7 @@ import { CommentResponse } from './dto/comment-response.dto';
 
 @Controller('comment')
 @ApiTags('댓글')
+@Serialize(CommentResponse)
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
@@ -28,12 +29,14 @@ export class CommentController {
     @Session() session: any,
     @Body() dto: CreateCommentDto,
   ) {
+    if (!session || session.username === undefined)
+      throw new UnauthorizedException('로그인하지 않으면 사용할 수 없습니다');
+
     const authorName = session.username;
     return this.commentService.create(authorName, id, dto.content);
   }
 
   @Get()
-  @Serialize(CommentResponse)
   @ApiOperation({
     summary: '전체 댓글 조회',
     description: '모든 댓글을 조회합니다',
@@ -44,7 +47,6 @@ export class CommentController {
   }
 
   @Get('/:post_id')
-  @Serialize(CommentResponse)
   @ApiOperation({
     summary: '포스트별 댓글 조회',
     description: '특정 포스트의 모든 댓글을 조회합니다',
@@ -64,6 +66,8 @@ export class CommentController {
   @ApiResponse({ status: 200, description: '조회 성공', type: CommentResponse })
   @ApiResponse({ status: 404, description: '사용자를 찾을 수 없음' })
   findAllByAuthor(@Session() session: any) {
+    if (!session || session.username === undefined)
+      throw new UnauthorizedException('로그인하지 않으면 사용할 수 없습니다');
     const authorName = session.username;
     return this.commentService.findAllByAuthor(authorName);
   }
@@ -74,8 +78,15 @@ export class CommentController {
   @ApiBody({ type: UpdateCommentDto })
   @ApiResponse({ status: 200, description: '수정 성공' })
   @ApiResponse({ status: 404, description: '댓글을 찾을 수 없음' })
-  update(@Param('comment_id') id: string, @Body() updateCommentDto: UpdateCommentDto) {
-    return this.commentService.update(+id, updateCommentDto);
+  update(
+    @Param('comment_id') id: string,
+    @Body() updateCommentDto: UpdateCommentDto,
+    @Session() session: any,
+  ) {
+    if (!session || session.username === undefined)
+      throw new UnauthorizedException('로그인하지 않으면 사용할 수 없습니다');
+
+    return this.commentService.update(+id, updateCommentDto, session.username);
   }
 
   @Delete('/:comment_id')
@@ -83,7 +94,12 @@ export class CommentController {
   @ApiParam({ name: 'comment_id', description: '댓글 ID' })
   @ApiResponse({ status: 200, description: '삭제 성공' })
   @ApiResponse({ status: 404, description: '댓글을 찾을 수 없음' })
-  remove(@Param('comment_id') id: string) {
-    return this.commentService.remove(+id);
+  remove(
+    @Param('comment_id') id: string,
+    @Session() session: any,
+  ) {
+    if (!session || session.username === undefined)
+      throw new UnauthorizedException('로그인하지 않으면 사용할 수 없습니다');
+    return this.commentService.remove(+id, session.username);
   }
 }

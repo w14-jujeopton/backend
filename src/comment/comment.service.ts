@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Repository } from 'typeorm';
@@ -65,20 +65,27 @@ export class CommentService {
     return this.repo.findOneBy({id});
   }
 
-  async update(id: number, attrs: Partial<Comment>) {
+  async update(id: number, attrs: Partial<Comment>, authorName: string) {
     const comment = await this.findOne(id);
     if (!comment)
       throw new NotFoundException('해당 댓글을 찾을 수 없습니다');
+    
+
+    if(comment.author.username !== authorName)
+      throw new UnauthorizedException("해당 댓글의 주인만 수정할 수 있습니다")
 
     Object.assign(comment, attrs);
 
     return this.repo.save(comment);
   }
 
-  async remove(id: number) {
+  async remove(id: number, authorName: string) {
     let comment = await this.findOne(id);
     if(!comment)
       throw new NotFoundException("해당 댓글을 찾을 수 없습니다")
+
+    if(comment.author.username !== authorName)
+      throw new UnauthorizedException("해당 댓글의 주인만 삭제할 수 있습니다")
 
     return this.repo.remove(comment);
   }

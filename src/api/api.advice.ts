@@ -15,7 +15,6 @@ export class ApiAdvice {
       model: "gemini-2.0-flash",
       contents: "nestJS에 대해서 설명해줘",
     });
-    console.log(response.text);
   }
 
 }
