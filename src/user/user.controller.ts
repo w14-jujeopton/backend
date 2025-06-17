@@ -20,8 +20,16 @@ export class UserController {
   @ApiResponse({ status: 401, description: '잘못된 패스워드' })
   async login(@Body() dto: LoginDto, @Session() session: any) {
     const user = await this.userService.login(dto.username, dto.password);
-    session.username = user.username
+    session.username = user.username;
     return user;
+  }
+
+  @Post('/logout')
+  @ApiOperation({ summary: '로그아웃' })
+  @ApiResponse({ status: 200, description: '로그아웃 성공' })
+  async logout(@Session() session: any) {
+    session.username = null;
+    return { message: '로그아웃 되었습니다' };
   }
 
   @Post('/signup')
@@ -32,8 +40,12 @@ export class UserController {
     type: UserResponse,
   })
   async create(@Body() dto: CreateUserDto, @Session() session: any) {
-    const user = await this.userService.create(dto.username, dto.password, dto.nickname);
-    session.username = user.username
+    const user = await this.userService.create(
+      dto.username,
+      dto.password,
+      dto.nickname,
+    );
+    session.username = user.username;
     return user;
   }
 
@@ -44,7 +56,6 @@ export class UserController {
   findAll() {
     return this.userService.findAll();
   }
-
 
   @Serialize(UserResponse)
   @Get('/:username')
