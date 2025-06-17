@@ -12,7 +12,7 @@ export class AuthService {
    * 이미 회원인지 확인
    * @param username
    */
-  async isAlreadySignedIn(username: string) {
+  async isAlreadySignedUp(username: string) {
     console.log(`username = ${username}`)
     const user = await this.userRepo.findOneBy({ username });
     console.log(`user.username = ${user?.username}`)
