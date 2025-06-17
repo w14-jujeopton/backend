@@ -53,7 +53,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
-      - name: Deploy to EC2
+      - name: Deploy to SERVER
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.HOST }}
@@ -64,5 +64,4 @@ jobs:
             docker pull gooch1744/jujeopton:latest
             docker stop jujeopton || true
             docker rm jujeopton || true
-            fuser -k 3000/tcp || true
             docker run -d --name jujeopton --env-file /home/gooch123/env/.env.dev -p 4000:3000 gooch1744/jujeopton:latest
