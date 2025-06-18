@@ -24,8 +24,12 @@ export class PostController {
   @ApiResponse({ status: 200, description: '조회 성공', type: PostResponse })
   @ApiResponse({ status: 404, description: '로그인 필요' })
   getMyPosts(@Session() session) {
+    console.log("/post")
     if (!session || session.username === undefined)
+    {
+      console.log("내 포스트 조회 : session undefined")
       throw new UnauthorizedException('로그인하지 않으면 사용할 수 없습니다');
+    }
     const username = session.username;
     return this.postService.getUserPosts(username);
   }
