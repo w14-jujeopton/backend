@@ -4,9 +4,10 @@ import { PostController } from './post.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../user/entities/user.entity';
 import { Post } from './entities/post.entity';
+import { ApiModule } from '../api/api.module';
 
 @Module({
-  imports :[TypeOrmModule.forFeature([Post, User])],
+  imports :[TypeOrmModule.forFeature([Post, User]), ApiModule],
   controllers: [PostController],
   providers: [PostService],
 })

@@ -8,11 +8,15 @@ import { Serialize } from '../interceptor/response.interceptor';
 import { PostResponse } from './dto/post.response';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiAdvice } from '../api/api.advice';
 
 @Controller('post')
 @ApiTags('롤링페이퍼')
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(
+    private readonly postService: PostService,
+    private readonly apiAdvice: ApiAdvice
+  ) {}
 
   @Get()
   @Serialize(PostResponse)
@@ -94,6 +98,16 @@ export class PostController {
 
     return this.postService.remove(+id);
   }
+
+  @Post("/ai")
+  @ApiOperation({summary : '주접글 생성'})
+  createAiPost(@Session() session) {
+    if (!session || session.username === undefined)
+      throw new UnauthorizedException('로그인하지 않으면 사용할 수 없습니다');
+
+    return this.apiAdvice.getAdvice();
+  }
+
 }
 
 /* Argument of type '{ content: string; userId: number; author: string; }'
